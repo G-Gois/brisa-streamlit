@@ -1,10 +1,12 @@
 import streamlit as st
 import numpy as np
 import pandas as pd
+from classes.graphs import Graphs
+import pickle
+from classes.sample_data import SampleData
 
 def on_form_submit():
     print("Form submitted")
-
 
 
 with st.sidebar:
@@ -19,6 +21,16 @@ with st.sidebar:
         submitted = st.form_submit_button("Executar",on_click=on_form_submit)
 
 predictions = pd.read_csv("./data/{}_predictions.csv".format(selected_model.replace(" ","")))
+graphs = Graphs()
+
+@st.cache(persist=True)
+def load_model():
+    with open('models/{}.pkl'.format(selected_model.replace(" ","")), 'rb') as f:
+        model = pickle.load(f)
+    return model
+
+sample = SampleData()
+
 
 with st.container():
     st.header("Modelo: " + selected_model)
@@ -26,7 +38,6 @@ with st.container():
     st.subheader("Precisão do modelo")
     predictions.drop("Unnamed: 0",axis=1,inplace=True)
     col1, col2 = st.columns(2)
-    with col1:
-        st.line_chart(predictions,x="Actual",y="Predicted")
-    with col2:
-        st.dataframe(predictions)
+    graphs.line(predictions)
+    graphs.multiline()
+    st.line_chart(data=sample.get_sales_data(),x="Date",y="Sales")
