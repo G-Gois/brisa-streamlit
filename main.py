@@ -11,6 +11,7 @@ def on_form_submit():
 
 with st.sidebar:
     st.title("Configurações do modelo")
+    st.subheader("Teste")
     with st.form("config"):
         st.write("Modelo:")
         selected_model = st.selectbox("Modelo:",["Random Forest"])
@@ -37,7 +38,5 @@ with st.container():
     st.subheader("Previsão de vendas")
     st.subheader("Precisão do modelo")
     predictions.drop("Unnamed: 0",axis=1,inplace=True)
-    col1, col2 = st.columns(2)
-    graphs.line(predictions)
-    graphs.multiline()
-    st.line_chart(data=sample.get_sales_data(),x="Date",y="Sales")
+    st.line_chart(predictions,x="Actual",y="Predicted")
+    st.line_chart(temp,x="data",y="quantidade_pro")
