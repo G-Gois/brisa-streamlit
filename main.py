@@ -22,6 +22,7 @@ with st.sidebar:
         submitted = st.form_submit_button("Executar",on_click=on_form_submit)
 
 predictions = pd.read_csv("./data/{}_predictions.csv".format(selected_model.replace(" ","")))
+temp = pd.read_csv("./data/data_set_temp.csv")
 graphs = Graphs()
 
 @st.cache(persist=True)
@@ -35,8 +36,15 @@ sample = SampleData()
 
 with st.container():
     st.header("Modelo: " + selected_model)
-    st.subheader("Previsão de vendas")
-    st.subheader("Precisão do modelo")
-    predictions.drop("Unnamed: 0",axis=1,inplace=True)
-    st.line_chart(predictions,x="Actual",y="Predicted")
-    st.line_chart(temp,x="data",y="quantidade_pro")
+    st.divider()
+    st.subheader("Histórico de pedidos")
+    st.line_chart(temp,x="data",y="quantidade_pro",height=0,use_container_width=True,color=(220,100,0))
+    st.divider()
+    st.subheader("Previsão X Histórico")
+    pred_vs_hist = pd.DataFrame({"Previsão":predictions["Predicted"],"Histórico":temp["quantidade_pro"]})
+    st.line_chart(predictions,y="Actual",x="Predicted",height=0,use_container_width=True)
+    st.line_chart(temp,x="data",y="quantidade_pro",height=0,use_container_width=True)
+
+# Gráficos
+# Confusion matrix
+# Desvio padrao
