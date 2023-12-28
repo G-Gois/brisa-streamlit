@@ -1,31 +1,52 @@
 import streamlit as st
-import altair as alt
+import pandas as pd
 from .sample_data import SampleData
+from .store import Store
+import matplotlib.pyplot as plt
+import numpy as np
+import mpld3
+import streamlit.components.v1 as components
+
+
+def display_data(cursor):
+    x = cursor.artist.get_xdata()[cursor.target.index]
+    y = cursor.artist.get_ydata()[cursor.target.index]
+    label = f"X: {x}\nY: {y}"
+    cursor.annotation.set_text(label)
+    cursor.annotation.get_bbox_patch().set(fc='white', ec='black', lw=1, alpha=0.9)
+
 class Graphs:
     def __init__(self) -> None:
         self.sample_data = SampleData().get_sales_data()
-    def predicted_vs_actual(self,model,X_test):
-        pred = model.predict(X_test)
-        pred_ci = pred.conf_int()
-        ax = X_test['2022':].plot(label='Observado')
-        pred.predicted_mean.plot(ax=ax, label='Previsão', alpha=.7, figsize=(14, 7))
-        ax.fill_between(pred_ci.index,
-                        pred_ci.iloc[:, 0],
-                        pred_ci.iloc[:, 1], color='k', alpha=.2)
-        ax.set_xlabel('Data')
-        ax.set_ylabel('Número de pedidos')
-        ax.set_title('Previsão vs. Observado')
-        st.line_chart(ax)
+        self.store = Store()
 
-    def line(self,predictions):
-        st.line_chart(predictions,x="Actual",y="Predicted")
+    def timeseries(self,store:Store):
 
-    def multiline(self):
-        chart = alt.Chart(self.sample_data).mark_line(width=3000).encode(
-            x='Date',
-            y='Sales',
-            tooltip=['Date', 'Sales'],
-            color='Predicted',
-            text='Predicted'
-        )
-        st.altair_chart(chart)
+        X, y = store.X,store.y
+        new_df = pd.concat([store.test_data, store.previous_data],ignore_index=False)
+
+
+        X.drop('Data', axis=1, inplace=True)
+
+        pred = store.model.predict(new_df['2023':].drop('qnt_delivery',axis=1).drop('Data',axis=1))
+        residuals = y - pred
+        # Compute the standard deviation of the residuals
+        pred_std = np.std(residuals)
+
+        # Compute the confidence interval manually
+        pred_ci = pd.DataFrame({'lower': pred - 1.96 * pred_std, 'upper': pred + 1.96 * pred_std})
+        plot_data = pd.DataFrame({'data':new_df['2023':].index,'value':pred})
+        # Plotting
+        new_df = new_df.sort_index()
+        fig,ax = plt.subplots(figsize=(10, 6))
+        plt.plot(new_df.index, new_df['qnt_delivery'], label='Real')
+        plt.plot(new_df['2023':].index, plot_data['value'], label='Previsto', alpha=0.7)
+        plt.fill_between(new_df['2023':].index, pred_ci['lower'], pred_ci['upper'], color='k', alpha=0.2)
+        plt.xlabel('Data')
+        plt.ylabel('Quantidade de delivery')
+        plt.legend()
+
+        fig_html = mpld3.fig_to_html(fig)
+
+        # Display the plot in Streamlit
+        components.html(fig_html,height=700,scrolling=True)
