@@ -52,7 +52,6 @@ class Graphs:
         plt.xlabel('True Values', fontsize=15)
         plt.ylabel('Predictions', fontsize=15)
         plt.axis('equal')
-        plt.show()
 
         fig_html = mpld3.fig_to_html(fig)
 
