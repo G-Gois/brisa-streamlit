@@ -38,3 +38,7 @@ with st.container():
     st.write("Para medição de desempenho do modelo, foi utilizado o Erro Percentual Absoluto Médio (MAPE)")
     st.latex(r"""MAPE = 100 \times \frac{1}{n} \sum_{i=1}^n \frac{|y_t - y_p|}{y_t}""")
     graphs.desempenho(store)
+    csv = pd.read_csv('data/predictions.csv',parse_dates=['data']).set_index('data')
+    graphs.delivery()
+    graphs.local()
+    graphs.pickup()

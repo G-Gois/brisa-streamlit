@@ -11,6 +11,7 @@ class Graphs:
     def __init__(self) -> None:
         self.sample_data = SampleData().get_sales_data()
         self.store = Store()
+        self.csv = pd.read_csv('data/predictions.csv',parse_dates=['data'])
 
     def timeseries(self,store:Store) -> None:
         new_df = store.all_data
@@ -63,3 +64,60 @@ class Graphs:
         st.write('Erro Médio Absoluto:', round(np.mean(errors), 2), 'pedidos.')
         components.html(fig_html,height=700,scrolling=True)
 
+    def delivery(self) -> None:
+        new_df = self.csv
+
+        # Sort the datetime index
+        new_df['data'] = sorted(new_df['data'])
+
+        # Plot
+        fig = plt.figure(figsize=(10, 6))
+        plt.title('Previsão de delivery')
+        plt.plot(new_df['data'], new_df['Delivery'], label='Previsto')
+        plt.plot(new_df['data'], new_df['Delivery_Actual'], label='Real', alpha=0.7)
+        plt.xlabel('Data')
+        plt.ylabel('Quantidade de delivery')
+        plt.legend()
+
+        fig_html = mpld3.fig_to_html(fig)
+
+        # Display the plot in Streamlit
+        components.html(fig_html,height=700,scrolling=True)
+    def local(self) -> None:
+        new_df = self.csv
+
+        # Sort the datetime index
+        new_df['data'] = sorted(new_df['data'])
+
+        # Plot
+        fig = plt.figure(figsize=(10, 6))
+        plt.title('Previsão de consumo local')
+        plt.plot(new_df['data'], new_df['Local'], label='Previsto')
+        plt.plot(new_df['data'], new_df['Local_Actual'], label='Real', alpha=0.7)
+        plt.xlabel('Data')
+        plt.ylabel('Quantidade de consumo local')
+        plt.legend()
+
+        fig_html = mpld3.fig_to_html(fig)
+
+        # Display the plot in Streamlit
+        components.html(fig_html,height=700,scrolling=True)
+    def pickup(self) -> None:
+        new_df = self.csv
+
+        # Sort the datetime index
+        new_df['data'] = sorted(new_df['data'])
+
+        # Plot
+        fig = plt.figure(figsize=(10, 6))
+        plt.title('Previsão de retirada')
+        plt.plot(new_df['data'], new_df['Pickup'], label='Previsto')
+        plt.plot(new_df['data'], new_df['Pickup_Actual'], label='Real', alpha=0.7)
+        plt.xlabel('Data')
+        plt.ylabel('Quantidade de retirada')
+        plt.legend()
+
+        fig_html = mpld3.fig_to_html(fig)
+
+        # Display the plot in Streamlit
+        components.html(fig_html,height=700,scrolling=True)
