@@ -7,15 +7,13 @@ from classes.store import Store
 store = Store()
 graphs = Graphs()
 MODELS = ["Random Forest","SVR"]
-def on_form_submit():
-    store.load_model(selected_model)
+
+st.set_page_config(
+    page_title="Home",
+    page_icon="👋",
+)
 
 with st.sidebar:
-    st.title("Configurações do modelo")
-    with st.form("config"):
-        selected_model = st.selectbox("Modelo:",MODELS)
-        submitted = st.form_submit_button("Executar",on_click=on_form_submit)
-        st.caption("Clique em 'Executar' para iniciar o modelo.")
     st.title("Autores:")
     st.write("Eduardo Bedin")
     st.write("Gabriel Weber")

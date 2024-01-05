@@ -23,16 +23,17 @@ class Graphs:
         residuals = store.y - pred
         pred_std = np.std(residuals)
         pred_ci = pd.DataFrame({'lower': pred - 1.96 * pred_std, 'upper': pred + 1.96 * pred_std})
-        
         # Sort the datetime index
         new_df = new_df.sort_index()
-
+        predicted = pd.DataFrame({'data':new_df['2023':].index,'qnt_delivery':pred})
+        predicted_weekly = predicted.resample('W', on='data').mean()
+        weekly = new_df.resample('W').mean()
         # Plot
         fig = plt.figure(figsize=(10, 6))
         plt.title('Previsão de delivery')
-        plt.plot(new_df.index, new_df['qnt_delivery'], label='Real')
-        plt.plot(new_df['2023':].index, pred, label='Previsto', alpha=0.7)
-        plt.fill_between(new_df['2023':].index, pred_ci['lower'], pred_ci['upper'], color='k', alpha=0.2)
+        plt.plot(weekly.index, weekly['qnt_delivery'], label='Real')
+        plt.plot(weekly['2023':].index, predicted_weekly, label='Previsto', alpha=0.7)
+        plt.fill_between(weekly['2023':].index, pred_ci['lower'][:27], pred_ci['upper'][:27], color='k', alpha=0.2)
         plt.xlabel('Data')
         plt.ylabel('Quantidade de delivery')
         plt.legend()
