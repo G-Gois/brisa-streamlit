@@ -11,7 +11,6 @@ class Store:
         self.load_test_data()
         self.load_prev_data()
         self.all_data =  pd.concat([self.test_data, self.previous_data],ignore_index=False)
-        self.load_model(self.model_name)
 
     def __new__(self, *args, **kwargs):
         if not self._instance:
