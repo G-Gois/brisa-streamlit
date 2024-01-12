@@ -15,6 +15,10 @@ class Graphs:
         self.y_pickup_SVR = pd.read_csv('data/predictionsSVRPickup.csv',parse_dates=['data'])
         self.y_local_SVR = pd.read_csv('data/predictionsSVRLocal.csv',parse_dates=['data'])
 
+        self.y_delivery_XG = pd.read_csv('data/predictionsXGDelivery.csv',parse_dates=['data'])
+        self.y_pickup_XG = pd.read_csv('data/predictionsXGPickup.csv',parse_dates=['data'])
+        self.y_local_XG = pd.read_csv('data/predictionsSVRLocal.csv',parse_dates=['data'])
+
         self.data2022 = pd.read_csv('data/training_data2022.csv',parse_dates=['data'])
         self.y = pd.read_csv('data/test_data2023.csv',parse_dates=['data'])
         self.all_data = pd.concat([self.data2022, self.y])
