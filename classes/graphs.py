@@ -9,39 +9,16 @@ import streamlit.components.v1 as components
 import streamlit as st
 class Graphs:
     def __init__(self) -> None:
-        self.sample_data = SampleData().get_sales_data()
-        self.store = Store()
-        self.csv = pd.read_csv('data/predictions.csv',parse_dates=['data'])
-
-    def timeseries(self,store:Store) -> None:
-        new_df = store.all_data
-
-        # Get predictions
-        pred = store.model.predict(new_df['2023':].drop('qnt_delivery',axis=1).drop('Data',axis=1))
-        store.y_predicted = pred
-        # Get confidence intervals
-        residuals = store.y - pred
-        pred_std = np.std(residuals)
-        pred_ci = pd.DataFrame({'lower': pred - 1.96 * pred_std, 'upper': pred + 1.96 * pred_std})
+        self.y_predRF = pd.read_csv('data/predictionsRF.csv',parse_dates=['data'])
         
-        # Sort the datetime index
-        new_df = new_df.sort_index()
+        self.y_delivery_SVR = pd.read_csv('data/predictionsSVRDelivery.csv',parse_dates=['data'])
+        self.y_pickup_SVR = pd.read_csv('data/predictionsSVRPickup.csv',parse_dates=['data'])
+        self.y_local_SVR = pd.read_csv('data/predictionsSVRLocal.csv',parse_dates=['data'])
 
-        # Plot
-        fig = plt.figure(figsize=(10, 6))
-        plt.title('Previsão de delivery')
-        plt.plot(new_df.index, new_df['qnt_delivery'], label='Real')
-        plt.plot(new_df['2023':].index, pred, label='Previsto', alpha=0.7)
-        plt.fill_between(new_df['2023':].index, pred_ci['lower'], pred_ci['upper'], color='k', alpha=0.2)
-        plt.xlabel('Data')
-        plt.ylabel('Quantidade de delivery')
-        plt.legend()
+        self.data2022 = pd.read_csv('data/training_data2022.csv',parse_dates=['data'])
+        self.y = pd.read_csv('data/test_data2023.csv',parse_dates=['data'])
+        self.all_data = pd.concat([self.data2022, self.y])
 
-        fig_html = mpld3.fig_to_html(fig)
-
-        # Display the plot in Streamlit
-        components.html(fig_html,height=700,scrolling=True)
-    
     def desempenho(self,store:Store) -> None:
         fig = plt.figure(figsize=(10,6))
 
@@ -64,17 +41,17 @@ class Graphs:
         st.write('Erro Médio Absoluto:', round(np.mean(errors), 2), 'pedidos.')
         components.html(fig_html,height=700,scrolling=True)
 
-    def delivery(self) -> None:
-        new_df = self.csv
+    def delivery(self,pred) -> None:
+         
+        new_df = pred
 
         # Sort the datetime index
         new_df['data'] = sorted(new_df['data'])
-
         # Plot
         fig = plt.figure(figsize=(10, 6))
         plt.title('Previsão de delivery')
+        plt.plot(self.all_data['data'], self.all_data['qnt_delivery'], label='Real', alpha=0.7)
         plt.plot(new_df['data'], new_df['Delivery'], label='Previsto')
-        plt.plot(new_df['data'], new_df['Delivery_Actual'], label='Real', alpha=0.7)
         plt.xlabel('Data')
         plt.ylabel('Quantidade de delivery')
         plt.legend()
@@ -83,8 +60,8 @@ class Graphs:
 
         # Display the plot in Streamlit
         components.html(fig_html,height=700,scrolling=True)
-    def local(self) -> None:
-        new_df = self.csv
+    def local(self,pred) -> None:
+        new_df = pred
 
         # Sort the datetime index
         new_df['data'] = sorted(new_df['data'])
@@ -92,18 +69,17 @@ class Graphs:
         # Plot
         fig = plt.figure(figsize=(10, 6))
         plt.title('Previsão de consumo local')
+        plt.plot(self.all_data['data'], self.all_data['qnt_local'], label='Real', alpha=0.7)
         plt.plot(new_df['data'], new_df['Local'], label='Previsto')
-        plt.plot(new_df['data'], new_df['Local_Actual'], label='Real', alpha=0.7)
         plt.xlabel('Data')
         plt.ylabel('Quantidade de consumo local')
         plt.legend()
 
         fig_html = mpld3.fig_to_html(fig)
 
-        # Display the plot in Streamlit
         components.html(fig_html,height=700,scrolling=True)
-    def pickup(self) -> None:
-        new_df = self.csv
+    def pickup(self,pred) -> None:
+        new_df = pred
 
         # Sort the datetime index
         new_df['data'] = sorted(new_df['data'])
@@ -111,8 +87,8 @@ class Graphs:
         # Plot
         fig = plt.figure(figsize=(10, 6))
         plt.title('Previsão de retirada')
+        plt.plot(self.all_data['data'], self.all_data['qnt_pickup'], label='Real', alpha=0.7)
         plt.plot(new_df['data'], new_df['Pickup'], label='Previsto')
-        plt.plot(new_df['data'], new_df['Pickup_Actual'], label='Real', alpha=0.7)
         plt.xlabel('Data')
         plt.ylabel('Quantidade de retirada')
         plt.legend()
