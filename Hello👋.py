@@ -34,7 +34,9 @@ with st.container():
     st.write("Os dados utilizados são do ano de 2022 e 2023. As informações de 2022 foram usadas para treino do modelo em uma granularidade diária, enquanto os dados de 2023 são desconhecidos pelo modelo.")
     st.write("Estrutura dos dados:")
     st.dataframe(store.all_data.drop('Data',axis=1).head())
+    st.divider()
     
     st.subheader("Autores:")
     st.write("Eduardo Bedin | Gabriel Weber | Rafael Hentz | Welyton Leidens")
+    st.write("Apoio e ajuda do Prof. Orientador Jacson")
  
