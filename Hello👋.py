@@ -37,6 +37,6 @@ with st.container():
     st.divider()
     
     st.subheader("Autores:")
-    st.write("Eduardo Bedin | Gabriel Weber | Rafael Hentz | Welyton Leidens")
+    st.markdown('[Eduardo Bedin](https://www.linkedin.com/in/dudurb/) | [Gabriel Weber](https://www.linkedin.com/in/devgabrielweber/) | [Rafael Hentz](https://www.linkedin.com/in/hentzrafael/) | [Welyton Dias](https://www.linkedin.com/in/welytondias/)')
     st.write("Apoio e ajuda do Prof. Orientador Jacson")
  
